@@ -22,11 +22,20 @@ jobs:
         run: |
           pip install uv
           uv pip install flet pyinstaller --system
+        env:
+          PYTHONIOENCODING: utf-8
+          LANG: en_US.UTF-8
 
       - name: Build with Flet
         # Flet 自带的打包命令，比直接用 pyinstaller 更适合 flet 项目
-        run: flet pack csv_tool.py --name "CSV智能拆分工具" --icon "logo.ico"  # 修改为正确的文件名
-        # 注意：你需要准备一个 .ico 图标文件，没有的话去掉 --icon 参数
+        run: |
+          chcp 65001
+          $env:PYTHONIOENCODING="utf-8"
+          flet pack csv_tool.py --name "CSV_Split_Tool" --icon "logo.ico"
+        env:
+          PYTHONIOENCODING: utf-8
+          LANG: en_US.UTF-8
+        shell: powershell
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4  # 更新到v4
