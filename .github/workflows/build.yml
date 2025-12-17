@@ -1,0 +1,35 @@
+name: Build Windows Exe
+
+on:
+  push:
+    tags:
+      - 'v*' # 当你推送标签（如 v1.0）时触发
+  workflow_dispatch: # 允许你手动点击按钮触发
+
+jobs:
+  build-windows:
+    runs-on: windows-latest # 关键点：向 GitHub 申请一台 Windows 电脑
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' # 建议用稳定版本
+
+      - name: Install Dependencies
+        run: |
+          pip install uv
+          uv pip install flet pyinstaller --system
+
+      - name: Build with Flet
+        # Flet 自带的打包命令，比直接用 pyinstaller 更适合 flet 项目
+        run: flet pack main.py --name "CSV智能拆分工具" --icon "logo.ico"
+        # 注意：你需要准备一个 .ico 图标文件，没有的话去掉 --icon 参数
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-exe-file
+          path: dist/*.exe
